@@ -24,10 +24,6 @@ race_df = spark.read \
 
 # COMMAND ----------
 
-display(race_df)
-
-# COMMAND ----------
-
 from pyspark.sql.functions import to_timestamp, concat, col, lit, current_timestamp
 
 # COMMAND ----------
@@ -59,15 +55,6 @@ race_df = spark.read.option("header", True).parquet(f"{processed_folder_path}/ra
 
 # MAGIC %sql
 # MAGIC USE formula1
-
-# COMMAND ----------
-
-# MAGIC %sql
-# MAGIC DROP TABLE race
-
-# COMMAND ----------
-
-race_df.write.format("parquet").saveAsTable("race")
 
 # COMMAND ----------
 
