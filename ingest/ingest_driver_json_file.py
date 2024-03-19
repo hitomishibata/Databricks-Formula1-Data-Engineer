@@ -31,25 +31,21 @@ driver_df = spark.read \
 
 # COMMAND ----------
 
-display(driver_df)
-
-# COMMAND ----------
-
 from pyspark.sql.functions import to_timestamp, concat, col, lit, current_timestamp
 
 # COMMAND ----------
 
 renamed_driver_df = driver_df.withColumnRenamed("driverId", "driver_id") \
                            .withColumnRenamed("driverRef", "driver_ref") \
-                           .withColumnRenamed("driver_number", "number") \
-                           .withColumnRenamed("driver_code", "code") \
+                           .withColumnRenamed("number", "driver_number") \
+                           .withColumnRenamed("code", "driver_code") \
                            .withColumn("driver_name", concat(col("name.forename"), lit(" "), col("name.surname"))) \
-                           .withColumnRenamed("driver_nationality", "nationality") \
+                           .withColumnRenamed("nationality", "driver_nationality") \
                            .withColumn("ingestion_date", current_timestamp())
 
 # COMMAND ----------
 
-final_driver_df = renamed_driver_df.drop(col("url"))
+final_driver_df = renamed_driver_df.drop(col("url"), col("name"))
 
 # COMMAND ----------
 
@@ -71,9 +67,3 @@ driver_df = spark.read.option("header", True).parquet(f"{processed_folder_path}/
 # COMMAND ----------
 
 driver_df.write.format("parquet").saveAsTable("driver")
-
-# COMMAND ----------
-
-# MAGIC %sql
-# MAGIC SELECT *
-# MAGIC FROM formula1.driver
