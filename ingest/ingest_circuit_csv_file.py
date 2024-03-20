@@ -3,7 +3,7 @@
 
 # COMMAND ----------
 
-from pyspark.sql.types import StructType, StructField, IntegerType, StringType, DoubleType
+# MAGIC %run "../include/common_function"
 
 # COMMAND ----------
 
@@ -20,10 +20,6 @@ cir_schema = StructType(fields=[StructField("circuitId", IntegerType(), False),
 # COMMAND ----------
 
 circuit_df = spark.read.option("header",True).schema(cir_schema).csv(f"{raw_folder_path}/circuits.csv")
-
-# COMMAND ----------
-
-from pyspark.sql.functions import col, current_timestamp
 
 # COMMAND ----------
 
@@ -49,7 +45,11 @@ joined_circuit_df = renamed_circuit_df.join(country_lookup_df, renamed_circuit_d
 
 # COMMAND ----------
 
-final_circuit_df = joined_circuit_df.select(col("circuit_id"),col("circuit_ref"),col("circuit_name"), col("circuit_country"), col("country_code_2_digit"), col("continent"), col("latitude"), col("longitude"), col("altitude")).withColumn("ingestion_date", current_timestamp())
+select_circuit_df = joined_circuit_df.select(col("circuit_id"),col("circuit_ref"),col("circuit_name"), col("circuit_country"), col("country_code_2_digit"), col("continent"), col("latitude"), col("longitude"), col("altitude"))
+
+# COMMAND ----------
+
+final_circuit_df = ingestion_date(select_circuit_df)
 
 # COMMAND ----------
 

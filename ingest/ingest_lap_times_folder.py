@@ -3,43 +3,44 @@
 
 # COMMAND ----------
 
-from pyspark.sql.types import *
+# MAGIC %run "../include/common_function"
 
 # COMMAND ----------
 
-pit_stops_schema = StructType(fields=[StructField("raceId", IntegerType(), True),
-                                      StructField("driverId", IntegerType(), False),
-                                      StructField("stop", StringType(), True),
-                                      StructField("lap", IntegerType(), True),
-                                      StructField("time", StringType(), True),
-                                      StructField("duration", StringType(), True),
-                                      StructField("milliseconds", IntegerType(), True),
+laptimes_schema = StructType(fields=[StructField("_c0", IntegerType(), True),
+                                      StructField("_c1", IntegerType(), False),
+                                      StructField("_c2", StringType(), True),
+                                      StructField("_c3", IntegerType(), True),
+                                      StructField("_c4", StringType(), True),
+                                      StructField("_c5", IntegerType(), True),
                                      ])
 
 # COMMAND ----------
 
-pit_stop_df = spark.read \
-.option("multiline", True) \
-.schema(pit_stops_schema) \
-.json(f"{raw_folder_path}/pit_stops.json")
+lap_df = spark.read \
+.schema(laptimes_schema) \
+.csv(f"{raw_folder_path}/lap_times")
 
 # COMMAND ----------
 
-from pyspark.sql.functions import current_timestamp
+renamed_laptimes_df = lap_df.withColumnRenamed("_c0", "race_id") \
+                            .withColumnRenamed("_c1", "driver_id") \
+                            .withColumnRenamed("_c2", "lap") \
+                            .withColumnRenamed("_c3", "position") \
+                            .withColumnRenamed("_c4", "time") \
+                            .withColumnRenamed("_c5", "milliseconds")
 
 # COMMAND ----------
 
-final_pit_df = pit_stop_df.withColumnRenamed("driverId", "driver_id") \
-                           .withColumnRenamed("raceId", "race_id") \
-                           .withColumn("ingestion_date", current_timestamp())
+final_laptimes_df = ingestion_date(renamed_laptimes_df)
 
 # COMMAND ----------
 
-final_pit_df.write.mode("overwrite").parquet(f"{processed_folder_path}/pit_stops")
+final_laptimes_df.write.mode("overwrite").parquet(f"{processed_folder_path}/lap_times")
 
 # COMMAND ----------
 
-pit_df = spark.read.option("header", True).parquet(f"{processed_folder_path}/pit_stops")
+lap_df = spark.read.option("header", True).parquet(f"{processed_folder_path}/lap_times")
 
 # COMMAND ----------
 
@@ -48,10 +49,14 @@ pit_df = spark.read.option("header", True).parquet(f"{processed_folder_path}/pit
 
 # COMMAND ----------
 
-pit_df.write.format("parquet").saveAsTable("pit_stops")
+lap_df.write.format("parquet").saveAsTable("lap_times")
 
 # COMMAND ----------
 
 # MAGIC %sql
-# MAGIC SELECT *
-# MAGIC FROM formula1.pit_stops
+# MAGIC SELECT d.driver_name, d.driver_nationality, l.position, l.time
+# MAGIC FROM formula1.driver d
+# MAGIC JOIN formula1.lap_times l
+# MAGIC ON d.driver_id = l.driver_id
+# MAGIC WHERE position = 1
+# MAGIC ORDER BY l.time

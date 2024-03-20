@@ -3,7 +3,7 @@
 
 # COMMAND ----------
 
-from pyspark.sql.types import *
+# MAGIC %run "../include/common_function"
 
 # COMMAND ----------
 
@@ -24,24 +24,22 @@ race_df = spark.read \
 
 # COMMAND ----------
 
-from pyspark.sql.functions import to_timestamp, concat, col, lit, current_timestamp
-
-# COMMAND ----------
-
-time_race_df = race_df.withColumn("ingestion_date", current_timestamp()) \
-       .withColumn("race_timestamp", to_timestamp(concat(col("date"),lit(" "), col("time")), 'yyyy-MM-dd HH:mm:ss'))
-
-# COMMAND ----------
-
-race_renamed_df = time_race_df.withColumnRenamed("raceId","race_id") \
+renamed_race_df = race_df.withColumnRenamed("raceId","race_id") \
      .withColumnRenamed("year", "race_year") \
      .withColumnRenamed("round", "race_round") \
      .withColumnRenamed("name", "race_name") \
-     .withColumnRenamed("circuitId", "circuit_id")
+     .withColumnRenamed("circuitId", "circuit_id") \
+     .withColumn("race_timestamp", to_timestamp(concat(col("date"),lit(" "), col("time")), 'yyyy-MM-dd HH:mm:ss')) 
+
 
 # COMMAND ----------
 
-final_race_df = race_renamed_df.select(col('race_id'), col('race_year'), col('race_round'), col('circuit_id'), col('race_name'), col('race_timestamp'), col('ingestion_date'))
+final_race_df = ingestion_date(renamed_race_df)
+final_race_df = final_race_df.drop('date', 'time')
+
+# COMMAND ----------
+
+display(final_race_df)
 
 # COMMAND ----------
 
