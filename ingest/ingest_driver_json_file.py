@@ -3,7 +3,7 @@
 
 # COMMAND ----------
 
-from pyspark.sql.types import *
+# MAGIC %run "../include/common_function"
 
 # COMMAND ----------
 
@@ -31,21 +31,20 @@ driver_df = spark.read \
 
 # COMMAND ----------
 
-from pyspark.sql.functions import to_timestamp, concat, col, lit, current_timestamp
-
-# COMMAND ----------
-
 renamed_driver_df = driver_df.withColumnRenamed("driverId", "driver_id") \
                            .withColumnRenamed("driverRef", "driver_ref") \
                            .withColumnRenamed("number", "driver_number") \
                            .withColumnRenamed("code", "driver_code") \
                            .withColumn("driver_name", concat(col("name.forename"), lit(" "), col("name.surname"))) \
-                           .withColumnRenamed("nationality", "driver_nationality") \
-                           .withColumn("ingestion_date", current_timestamp())
+                           .withColumnRenamed("nationality", "driver_nationality")
 
 # COMMAND ----------
 
-final_driver_df = renamed_driver_df.drop(col("url"), col("name"))
+drop_driver_df = renamed_driver_df.drop(col("url"), col("name"))
+
+# COMMAND ----------
+
+final_driver_df = ingestion_date(drop_driver_df)
 
 # COMMAND ----------
 

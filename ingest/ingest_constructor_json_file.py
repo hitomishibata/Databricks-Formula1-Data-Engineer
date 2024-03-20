@@ -3,7 +3,7 @@
 
 # COMMAND ----------
 
-from pyspark.sql.types import *
+# MAGIC %run "../include/common_function"
 
 # COMMAND ----------
 
@@ -21,19 +21,14 @@ constructor_dropped_df = constructor_df.drop('url')
 
 # COMMAND ----------
 
-from pyspark.sql.functions import current_timestamp
-
-# COMMAND ----------
-
-final_constructor_df = constructor_dropped_df.withColumnRenamed("constructorId", "constructor_id") \
+renamed_constructor_df = constructor_dropped_df.withColumnRenamed("constructorId", "constructor_id") \
                              .withColumnRenamed("constructorRef", "constructor_ref") \
                              .withColumnRenamed("name", "team_name") \
-                             .withColumnRenamed("nationality", "team_nationality") \
-                             .withColumn("ingestion_date", current_timestamp())
+                             .withColumnRenamed("nationality", "team_nationality")
 
 # COMMAND ----------
 
-display(final_constructor_df)
+final_constructor_df = ingestion_date(renamed_constructor_df)
 
 # COMMAND ----------
 
