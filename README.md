@@ -1,5 +1,5 @@
-# Databricks-Formula1-Data-Engineer-Project
+# Introduction
 
 Hello everyone! Thank you for visiting my repository.
-In this project, I mostly followed the assignments from the Udemy course, Azure Databricks & Spark For Data Engineers (PySpark / SQL).
-I changed some parts to make it more challenging (e.g., adding look-up file)
+In this end-to-end data engineering project, I created Databricks notebooks to achieve ETL process (extract, transform, and load) with Formula1 datasets. Also, the data is visualized in Power BI. I mostly followed the assignments from the Udemy course, Azure Databricks & Spark For Data Engineers (PySpark / SQL). However, I changed some parts to make it more challenging (e.g., adding look-up file)
+
