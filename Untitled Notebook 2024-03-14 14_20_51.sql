@@ -10,5 +10,5 @@ presentation_folder_path = 'abfss://presentation@dludemyes.dfs.core.windows.net'
 
 spark.conf.set(
     "fs.azure.account.key.dludemyes.dfs.core.windows.net",
-    "Tt1gweEejiPIA5ODGth2hES63ZifDSVd5tQPY8mxoV1O8bXaE8B8F4zcFG7tec3fs4PqM7ImpAEh+ASt0tonkQ=="
+    "AccessKey"
 )
